@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fox Prox Chat - WhatsApp Style</title>
+    <link rel="stylesheet" href="he.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="chat-header">
+        <h1>Fox Prox Chat</h1>
+    </div>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="input-area">
+            <textarea id="user-input" placeholder="Type a message"></textarea>
+            <button id="send-btn">➤</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:5000');
+
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function appendMessage(sender, text) {
+            const messageElem = document.createElement('div');
+            messageElem.classList.add('message', sender);
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            bubble.textContent = text;
+        }
+
+        function getBotResponse(userText) {
+            if (!userText.trim()) {
+                return "Please type something.";
+            }
+            return "You said: " + userText;
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userText = userInput.value;
+            if (!userText.trim()) return;
+            appendMessage('user', userText);
+            userInput.value = '';
+            setTimeout(() => {
+                const botResponse = getBotResponse(userText);
+                appendMessage('bot', botResponse);
+            }, 500);
+        });
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
